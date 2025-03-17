@@ -13,7 +13,7 @@ export const envsSchema = joi
   .object<EnvVars>({
     PORT: joi.number().required(),
     PRODUCTS_MICROSERVICE_HOST: joi.string().required(),
-    PRODUCTS_MICROSERVICE_PORT: joi.string().required(),
+    PRODUCTS_MICROSERVICE_PORT: joi.number().required(),
     ORDERS_MICROSERVICE_HOST: joi.string().required(),
     ORDERS_MICROSERVICE_PORT: joi.number().required(),
   })
