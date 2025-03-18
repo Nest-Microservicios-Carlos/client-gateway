@@ -13,34 +13,29 @@ import {
 import { ClientProxy, RpcException } from '@nestjs/microservices';
 import { catchError, firstValueFrom } from 'rxjs';
 import { PaginationDto } from 'src/common/dto/pagination.dto';
-import { PRODUCTS_SERVICE } from 'src/config';
+import { NATS_SERVICE } from 'src/config';
 import { Product } from './interfaces/product';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 
 @Controller('products')
 export class ProductsController {
-  constructor(
-    @Inject(PRODUCTS_SERVICE) private readonly productsClient: ClientProxy,
-  ) {}
+  constructor(@Inject(NATS_SERVICE) private readonly client: ClientProxy) {}
 
   @Post()
   createProduct(@Body() createProductDto: CreateProductDto) {
-    return this.productsClient.send(
-      { cmd: 'create_product' },
-      createProductDto,
-    );
+    return this.client.send({ cmd: 'create_product' }, createProductDto);
   }
 
   @Get()
   findAllProducts(@Query() paginationDto: PaginationDto) {
-    return this.productsClient.send({ cmd: 'find_all' }, paginationDto);
+    return this.client.send('find_all', paginationDto);
   }
   @Get(':id')
   async findOne(@Param('id') id: number) {
     try {
       const product: Product = await firstValueFrom(
-        this.productsClient.send({ cmd: 'find_one' }, { id }),
+        this.client.send({ cmd: 'find_one' }, { id }),
       );
       return product;
     } catch (error) {
@@ -54,7 +49,7 @@ export class ProductsController {
     @Body() updateProductDto: UpdateProductDto,
     @Param('id', ParseIntPipe) id: number,
   ) {
-    return this.productsClient
+    return this.client
       .send({ cmd: 'update_product' }, { id, ...updateProductDto })
       .pipe(
         catchError((error) => {
@@ -65,7 +60,7 @@ export class ProductsController {
 
   @Delete(':id')
   deleteProduct(@Param('id') id: number) {
-    return this.productsClient.send({ cmd: 'remove_product' }, { id }).pipe(
+    return this.client.send({ cmd: 'remove_product' }, { id }).pipe(
       catchError((error) => {
         throw new RpcException(error);
       }),
