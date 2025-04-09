@@ -8,7 +8,14 @@ async function bootstrap() {
   const logger = new Logger('Main-GateWay');
   const app = await NestFactory.create(AppModule);
 
-  app.setGlobalPrefix('api');
+  app.setGlobalPrefix('api', {
+    exclude: [
+      {
+        path: '',
+        method: RequestMethod.GET,
+      },
+    ],
+  });
 
   app.useGlobalPipes(
     new ValidationPipe({
@@ -21,7 +28,7 @@ async function bootstrap() {
 
   await app.listen(envs.port);
 
-  console.log('Hola mundo Segundo cambio');
+  console.log('Health Check Configured!');
 
   logger.log(`Gateway running on port ${envs.port}`);
 }
