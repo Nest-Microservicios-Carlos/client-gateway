@@ -1,6 +1,6 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { Logger, ValidationPipe } from '@nestjs/common';
+import { Logger, RequestMethod, ValidationPipe } from '@nestjs/common';
 import { envs } from './config';
 import { RpcCustomExceptionFilter } from './common/exceptions/rpc-exception.filter';
 
